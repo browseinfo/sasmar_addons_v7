@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+	<record id="view_partner_schedule_call_form1" model="ir.ui.view">
+		<field name="name">partner.schedule.call.form.extended</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+
+		<div name="buttons" position="inside">
+			<button class="oe_inline oe_stat_button" type="action" 
+			    name="%(crm_partner_schedule_call.phonecall_to_phonecall_partner_act)d" icon="fa-phone">
+			    <div>Schedule<br/>/Log Call</div>
+			</button>
+		</div>
+
+		</field>
+	</record>
+
+    </data>
+</openerp>

@@ -1,0 +1,87 @@
+<?xml version="1.0" ?>
+<openerp>
+  <data>
+        <record id="view_bank_statement_periodic_form" model="ir.ui.view">
+            <field name="name">account.bank.statement.reconcile.form</field>
+            <field name="model">account.bank.statement</field>
+			<field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Bank Statement" version="7.0">
+			<header>
+				<button name="button_confirm_bank" states="dummy" string="Confirm" type="object" attrs="{'invisible': [('save','=',False)]}"/>
+				<button name="button_dummy" states="dummy" string="Compute" type="object" attrs="{'invisible': [('save','=','False')]}"/>
+				<button name="button_cancel" states="confirm" string="Cancel" type="object"/>
+				<button name="button_confirm_journal" states="draft" string="Confirm Journal" type="object" class="oe_highlight"/>
+				<field name="state"  widget="statusbar" nolabel="1" statusbar_visible="draft,confirm,dummy"/>
+			</header>
+			<sheet string="Bank Statement" layout="auto">
+                    <label for="name" class="oe_edit_only"/>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="journal_id" domain="[('type', '=', 'bank')]" on_change="onchange_journal_id(journal_id)" widget="selection"/>
+                            <label for="date" string="Date / Period"/>
+                            <div>
+                                <field name="date" on_change="onchange_date(date, company_id)" class="oe_inline"/>
+                                <field name="period_id" class="oe_inline"/>
+                            </div>
+                            <field name='company_id' widget="selection" groups="base.group_multi_company" />
+                            <field name="currency" invisible="1"/>
+                        </group><group>
+                            <field name="balance_start" widget="monetary" options='{"currency_field" : "currency"}'/>
+                            <field name="balance_end_real" widget="monetary" options='{"currency_field" : "currency"}'/>
+                            <field name="save" invisible="1"/>
+                        </group>
+                    </group>
+			<notebook colspan="4">
+				<page string="Journal Entries" attrs="{'invisible': [('save','=',False)]}">
+					<field name="account_id" invisible="1" />
+					<field colspan="4" name="move_line_ids" nolabel="1" widget="many2many" domain="[('account_id','=',account_id),('statement_id', '=', False)]">
+						<tree string="Statement lines">
+							<field name="date"/>
+							<field name="period_id"/>
+							<field name="journal_id"/>
+							<field name="ref"/>
+							<field name="name"/>
+							<field name="account_id"/>
+							<field name="partner_id"/>
+							<field name="debit"/>
+							<field name="credit"/>
+						</tree>
+					</field>
+				</page>
+			</notebook>
+				<group col="8" colspan="4">
+					<field name="balance_end"/>
+				</group>
+			</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_bank_statement_periodic_tree" model="ir.actions.act_window">
+		<field name="name">Bank Statements</field>
+		<field name="res_model">account.bank.statement</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('journal_id.type', '=', 'bank')]</field>
+		<field name="search_view_id" ref="account.view_bank_statement_search"/>
+		<field name="context">{'journal_type':'bank'}</field>
+	</record>
+	<record model="ir.actions.act_window.view" id="action_bank_statement_periodic_tree_bank">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="account.view_bank_statement_tree"/>
+		<field name="act_window_id" ref="action_bank_statement_periodic_tree"/>
+	</record>
+	<record model="ir.actions.act_window.view" id="action_bank_statement_periodic_form_bank">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_bank_statement_periodic_form"/>
+		<field name="act_window_id" ref="action_bank_statement_periodic_tree"/>
+	</record> 
+
+	<menuitem name="Statements Reconciliation" action="action_bank_statement_periodic_tree" id="menu_menu_Bank_process" parent="account.menu_account_pp_statements" sequence="15"/>  
+        
+  </data>
+</openerp>

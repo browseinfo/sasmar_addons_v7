@@ -1,0 +1,240 @@
+# -*- coding: utf-8 -*-
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import time
+from operator import itemgetter
+from itertools import groupby
+
+from openerp.osv import fields, osv, orm
+from openerp.tools.translate import _
+from openerp import netsvc
+from openerp import tools
+import logging
+import csv
+import base64
+import cStringIO
+from openerp.tools.translate import _
+import sys
+from urllib2 import urlopen
+from xlwt import Workbook, easyxf, Formula
+import StringIO
+
+
+class stock_inventory(osv.osv):
+    _inherit = 'stock.inventory'
+    _columns = {
+        'attachment_csv' : fields.binary('File'),
+        }
+
+    def import_csv(self, cr, uid, ids, context=None):
+            stock_move_obj = self.pool.get('stock.move')
+            product_obj = self.pool.get('product.product')
+            location_obj = self.pool.get('stock.location')
+            uom_obj = self.pool.get('product.uom')
+            aa = self.browse(cr,uid,ids)[0]
+            if not aa.attachment_csv:
+                raise osv.except_osv(_('Import Error!'), _('Please Select Valid File.'))  
+            if aa.attachment_csv:
+                file_data = base64.decodestring(aa.attachment_csv)
+                input = cStringIO.StringIO(file_data)
+                reader = csv.reader(input,delimiter='\t')
+                data = []
+                count = 1 
+                row_len = 1
+                for row in reader:
+                    if count == 1:
+                    	count = 0
+                    	continue
+                    product_id = product_obj.search(cr, uid, [('name', '=', row[0])])
+                    if not product_id:
+                        raise osv.except_osv(_('Error!'), _('There is no Product!'))
+                    location_id = location_obj.search(cr, uid, [('name', '=', row[1])])
+                    if not location_id:
+                        raise osv.except_osv(_('Error!'), _('There is no Location!'))
+                    uom_id = uom_obj.search(cr, uid, [('name', '=', row[3])])
+                    if not uom_id:
+                        raise osv.except_osv(_('Error!'), _('There is no Uom!'))
+                    if len(product_id) > 0: 
+                        data_create = {'product_id':product_id[0],'location_id':location_id[0],
+        		                           'product_uom' : uom_id[0], 'product_qty' : row[2], 'inventory_id' : aa.id}
+                        self.pool.get('stock.inventory.line').create(cr, uid,data_create,context=context)
+
+stock_inventory()
+
+
+class stock_picking(osv.osv):
+    _inherit = 'stock.picking'
+    _columns = {
+        'location_id' : fields.many2one('stock.location','Destination Location'),
+        'src_location_id' : fields.many2one('stock.location','Source Location'),
+        }
+
+
+stock_picking()
+
+class stock_picking_out(osv.osv):
+    _inherit = 'stock.picking.out'
+    _columns = {
+        'location_id' : fields.many2one('stock.location','Destination Location'),
+        'src_location_id' : fields.many2one('stock.location','Source Location'),
+        }
+
+
+stock_picking_out()
+
+
+class stock_move(osv.osv):
+    _inherit = 'stock.move'
+    _columns = {
+        'location_dest_id': fields.many2one('stock.location', 'Destination Location', required=True,states={'done': [('readonly', True)]}, select=True, help="Location where the system will stock the finished products."),
+        'location_id': fields.many2one('stock.location', 'Source Location', required=True, select=True,states={'done': [('readonly', True)]}, help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations."),
+    }
+
+    def onchange_move_type(self, cr, uid, ids, type, context=None):
+        """ On change of move type gives sorce and destination location.
+        @param type: Move Type
+        @return: Dictionary of values
+        """
+        mod_obj = self.pool.get('ir.model.data')
+        location_source_id = 'stock_location_stock'
+        location_dest_id = 'stock_location_stock'
+        if type == 'in':
+            location_source_id = 'stock_location_suppliers'
+            location_dest_id = 'stock_location_stock'
+        try:
+            source_location = mod_obj.get_object_reference(cr, uid, 'stock', location_source_id)
+            with tools.mute_logger('openerp.osv.orm'):
+                self.pool.get('stock.location').check_access_rule(cr, uid, [source_location[1]], 'read', context=context)
+        except (orm.except_orm, ValueError):
+            source_location = False
+        try:
+            dest_location = mod_obj.get_object_reference(cr, uid, 'stock', location_dest_id)
+            with tools.mute_logger('openerp.osv.orm'):
+                self.pool.get('stock.location').check_access_rule(cr, uid, [dest_location[1]], 'read', context=context)
+        except (orm.except_orm, ValueError):
+            dest_location = False
+        if type == 'internal':
+            return {'value': {}}
+        if type == 'out':
+            return {'value': {}}
+        return {'value':{'location_id': source_location and source_location[1] or False, 'location_dest_id': dest_location and dest_location[1] or False}}
+
+    def _default_location_destinationone(self, cr, uid, context=None):
+        """ Gets default address of partner for destination location
+        @return: Address id or False
+        """
+        mod_obj = self.pool.get('ir.model.data')
+        picking_type = context.get('picking_type')
+        location_id = False
+        if context is None:
+            context = {}
+        if context.get('move_line', []):
+            if context['move_line'][0]:
+                if isinstance(context['move_line'][0], (tuple, list)):
+                    location_id = context['move_line'][0][2] and context['move_line'][0][2].get('location_dest_id',False)
+                else:
+                    move_list = self.pool.get('stock.move').read(cr, uid, context['move_line'][0], ['location_dest_id'])
+                    location_id = move_list and move_list['location_dest_id'][0] or False
+        elif context.get('address_out_id', False):
+            property_out = self.pool.get('res.partner').browse(cr, uid, context['address_out_id'], context).property_stock_customer
+            location_id = property_out and property_out.id or False
+        elif context.get('location_dest_id', False):
+            location_id = context.get('location_dest_id', False)
+        else:
+            location_xml_id = False
+            if picking_type in ('in', 'internal'):
+                location_xml_id = 'stock_location_stock'
+            elif picking_type == 'out':
+                location_xml_id = 'stock_location_customers'
+            if location_xml_id:
+                try:
+                    location_model, location_id = mod_obj.get_object_reference(cr, uid, 'stock', location_xml_id)
+                    with tools.mute_logger('openerp.osv.orm'):
+                        self.pool.get('stock.location').check_access_rule(cr, uid, [location_id], 'read', context=context)
+                except (orm.except_orm, ValueError):
+                    location_id = False
+            else:
+                loc_id = 'stock_location_stock'
+                if loc_id:
+                    try:
+                        location_model, location_id = mod_obj.get_object_reference(cr, uid, 'stock', loc_id)
+                        with tools.mute_logger('openerp.osv.orm'):
+                            self.pool.get('stock.location').check_access_rule(cr, uid, [location_id], 'read', context=context)
+                    except (orm.except_orm, ValueError):
+                        location_id = False
+        return location_id
+
+    def _default_location_sourceone(self, cr, uid, context=None):
+        """ Gets default address of partner for source location
+        @return: Address id or False
+        """
+        mod_obj = self.pool.get('ir.model.data')
+        picking_type = context.get('picking_type')
+        location_id = False
+
+        if context is None:
+            context = {}
+        if context.get('move_line', []):
+            try:
+                location_id = context['move_line'][0][2]['location_id']
+            except:
+                pass
+        elif context.get('address_in_id', False):
+            part_obj_add = self.pool.get('res.partner').browse(cr, uid, context['address_in_id'], context=context)
+            if part_obj_add:
+                location_id = part_obj_add.property_stock_supplier.id
+        elif context.get('location_id', False):
+            location_id = context.get('location_id', False)
+        else:
+            location_xml_id = False
+            if picking_type == 'in':
+                location_xml_id = 'stock_location_suppliers'
+            elif picking_type in ('out', 'internal'):
+                location_xml_id = 'stock_location_stock'
+            if location_xml_id:
+                try:
+                    location_model, location_id = mod_obj.get_object_reference(cr, uid, 'stock', location_xml_id)
+                    with tools.mute_logger('openerp.osv.orm'):
+                        self.pool.get('stock.location').check_access_rule(cr, uid, [location_id], 'read', context=context)
+                except (orm.except_orm, ValueError):
+                    location_id = False
+            else:
+                loc_id = 'stock_location_stock'
+                if loc_id:
+                    try:
+                        location_model, location_id = mod_obj.get_object_reference(cr, uid, 'stock', loc_id)
+                        with tools.mute_logger('openerp.osv.orm'):
+                            self.pool.get('stock.location').check_access_rule(cr, uid, [location_id], 'read', context=context)
+                    except (orm.except_orm, ValueError):
+                        location_id = False
+                    
+        return location_id
+        
+    def _check_dest_location(self , cr , uid , context=None):
+        picking_type = context.get('picking_type')
+        location_dest = context.get('location_dest_id')
+        if picking_type in ('out','internal') and location_dest:
+            if location_dest != self._default_location_destinationone:
+                return location_dest
+            else:
+                return self._default_location_destinationone
+        else:
+            return self._default_location_destinationone
+        
+    def _check_src_location(self , cr , uid , context=None):
+        picking_type = context.get('picking_type')
+        location_src = context.get('location_id')
+        if picking_type in ('out','internal') and location_src:
+            if location_src != self._default_location_sourceone:
+                return location_src
+            else:
+                return self._default_location_sourceone
+        else:
+            return self._default_location_sourceone
+
+    _defaults = {
+        'location_dest_id': _check_dest_location,
+        'location_id': _check_src_location,
+    }
+
+

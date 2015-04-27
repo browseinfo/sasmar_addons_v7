@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<template id="custom_invoice_external_layout">
+			<!-- Multicompany -->
+			<t t-if="o and 'company_id' in o">
+				<t t-set="company" t-value="o.company_id"></t>
+			</t>
+			<t t-if="not o or not 'company_id' in o">
+				<t t-set="company" t-value="res_company"></t>
+			</t>
+			<t t-foreach="docs" t-as="docs">
+				<t t-call="sasmar_report.custom_invoice_external_layout_header" />
+				<t t-raw="0" />
+				<t t-call="sasmar_report.custom_invoice_external_layout_footer" />
+			</t>
+		</template>
+
+		<template id="custom_invoice_external_layout_header">
+			<div class="header">
+				<t t-foreach="docs" t-as="o">
+					<div class="row" style="border-bottom: 2px solid black;">
+						<div class="col-xs-5">
+							<img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo"
+												style="width:200px;height:80px; margin-bottom: 20px" /> <br/>
+							<strong style="font-size: 20;">Invoice <span t-field="o.number"/></strong> <br/>
+							<span style="margin-left: 10px;" t-field="company.partner_id"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.street"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.city"/> ,
+							<span style="margin-left: 10px;" t-field="company.zip"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.country_id"/> <br/>
+							<strong style="margin-left: 10px;">Tel: </strong><span t-field="company.phone"/>
+							<strong>Fax: </strong><span t-field="company.fax"/>
+						</div>
+						<div class="col-xs-7" style="font-size:15;">
+							<div class="row">
+								<table style="width:100%;" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff;">
+										<td style="width:25%">
+											<span style="height: 20px">Date</span>
+										</td>
+										<td style="border-left:2px solid white; width:25%">
+											<span style="height: 20px">Invoice #</span>
+										</td>
+										<td style="border-left:2px solid white; width:50%">
+											<span style="height: 20px">Customer Ref</span>
+										</td>
+									</tr>
+									<tr style="height: 20px">
+										<td>
+											<span style="height: 20px" t-esc="get_date_format(o.date_invoice)"></span>
+										</td>
+										<td>
+											<span style="height: 20px" t-field="o.number"></span>
+										</td>
+										<td>
+											<span style="height: 20px" t-field="o.name"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 40%">
+											<span>Customer Supplier #</span>
+										</td>
+										<td style="border-left:2px solid white; width: 25%">
+											<span>Ship Method</span>
+										</td>
+										<td style="border-left:2px solid white; width: 35%">
+											<span>Account Manager</span>
+										</td>
+									</tr>
+									<tr style="height: 20px">
+										<td>
+											<span t-field="o.partner_id"></span>
+										</td>
+										<td>
+											<span t-field="o.ship_via"></span>
+										</td>
+										<td>
+											<span t-field="o.user_id"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 35%">
+											<span>Estimated delivery</span>
+										</td>
+										<td style="border-left:2px solid white; width: 35%">
+											<span>Terms</span>
+										</td>
+										<td style="border-left:2px solid white; width: 30%">
+											<span>Customer PO #</span>
+										</td>
+									</tr>
+									<tr style="height: 30px">
+										<td>
+											<span t-esc="get_date_format(o.delivery_date)"></span>
+										</td>
+										<td>
+											<span t-field="o.payment_term"></span>
+										</td>
+										<td>
+											<span t-field="o.po_number"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 60%">
+											<span>Incoterm</span>
+										</td>
+										<td style="border-left:2px solid white; width: 40%">
+											<span>Customer Tax #</span>
+										</td>
+									</tr>
+									<tr style="height: 30px">
+										<td>
+											<span t-field="o.incoterm"></span>
+										</td>
+										<td>
+											<span t-field="o.partner_id.vat"></span>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</t>
+			</div>
+		</template>
+
+		<template id="custom_invoice_external_layout_footer">
+			<div class="footer">
+				<div class="row">
+					<t t-foreach="docs" t-as="o">
+						<div style="width: 100%;">
+							<strong style="font-size: 20">Direct Payment Details</strong>
+							<table style="width: 100%">
+								<tr>
+									<td style="width: 15%">
+										<span>Bank: </span>
+									</td>
+									<td>
+										<span t-field="o.partner_bank_id.bank_name"/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span>Company: </span>
+									</td>
+									<td>
+										<span t-field="o.partner_bank_id.partner_id"/></td>
+								</tr>
+								<tr>
+									<td>
+										<span>Bank Identifier: </span>
+									</td>
+									<td>
+										<span t-field="o.partner_bank_id.bank_bic"/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span>Account #: </span>
+									</td>
+									<td>
+										<span t-field="o.partner_bank_id.acc_number"/>
+									</td>
+								</tr>
+							</table>
+						</div>
+						
+						<div class="col-xs-12">
+							<p>Phone: <span t-field="company.phone"/> | Fax: <span t-field="company.fax"/> | Website: <span t-field="company.website"/> | Incorporated in the State of Delaware</p> 
+						</div>
+					</t>	
+				</div>
+			</div>
+		</template>
+	</data>
+</openerp>

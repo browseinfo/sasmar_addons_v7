@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+		<record id="view_product_product_supplierinfo_form1" model="ir.ui.view">
+			<field name="name">product.supplierinfo.extened</field>
+			<field name="model">product.supplierinfo</field>
+			<field name="arch" type="xml">
+            	<form string="Supplier Information" version="7.0">
+            		<group cols="4">
+        				<group>
+        					<field name="name"/>  
+        					<field name="min_qty"/>
+        					<field name="delay"/>
+        					<field name="product_id"/>
+        					          					
+    					</group>
+    					<group>		
+    						<field name="sequence"/>
+    						<field name="product_uom"/>
+    						<field name="product_name"/>
+    						<field name="product_code"/>
+                    	</group>
+    				</group>
+            	</form>
+			</field>
+		</record>
+		
+	<record id="action_product_supplierinfo_form" model="ir.actions.act_window">
+		<field name="name">Product Supplierinfo</field>
+		<field name="res_model">product.supplierinfo</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem action="action_product_supplierinfo_form" id="menu_action_product_supplierinfo_form" parent="stock.menu_stock_product"
+            />
+
+    </data>
+</openerp>

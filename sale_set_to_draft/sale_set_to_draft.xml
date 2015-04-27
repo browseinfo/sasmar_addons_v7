@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_sale_order_set_to_draft_inherit_form" model="ir.ui.view">
+            <field name="name">sale.order.state.form.view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='copy_quotation']" position="after">
+           		   	<button name="action_set_draft" attrs="{'invisible': [('state','in',['draft'])]}" string="Set to Draft" type="object"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

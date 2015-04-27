@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <record model="ir.actions.act_window" id="crm.crm_case_category_act_leads_all">
+        <field name="name">Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">['|', ('type','=','lead'), ('type','=',False)]</field>
+        <field name="view_id" ref="crm.crm_case_tree_view_leads"/>
+        <field name="search_view_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="context">{
+                'default_type':'lead',
+                'stage_type':'lead',
+                'needaction_menu_ref': 'crm.menu_crm_opportunities',
+                'search_default_unassigned':1,
+            }
+        </field>
+        <field name="help" type="html">
+            <p>
+                Use leads if you need a qualification step before creating an
+                opportunity or a customer. It can be a business card you received,
+                a contact form filled in your website, or a file of unqualified
+                prospects you import, etc.
+            </p><p>
+                Once qualified, the lead can be converted into a business
+                opportunity and/or a new customer in your address book.
+            </p>
+        </field>
+    </record>
+
+    </data>
+</openerp>

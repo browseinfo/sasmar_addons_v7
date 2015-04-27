@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <record id="view_crm_lead_inherit_customize" model="ir.ui.view">
+        <field name="name">view.crm.lead.inherit.customize.form</field>
+        <field name="model">crm.lead</field>
+		<field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+        <field name="arch" type="xml">
+			<field name="fax" position="after">
+				<field name="skype"/>
+				<field name="website"/>
+			</field>
+			<field name="email_from" position="after">
+				<field name="email_to"/>
+			</field>
+		    <xpath expr="//button[@string='Schedule/Log Call']" position="after">
+		        <button type="action"
+		            string="Tasks"
+		            name="%(project.action_view_task)d"
+		            context="{'search_default_partner_id': active_id}"
+		            />
+		    </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_opp_inherit_customize" model="ir.ui.view">
+        <field name="name">view.opp.inherit.customize.form</field>
+        <field name="model">crm.lead</field>
+		<field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+		    <xpath expr="//button[@string='Meeting']" position="after">
+		        <button type="action"
+		            string="Tasks"
+		            name="%(project.action_view_task)d"
+		            context="{'search_default_partner_id': active_id}"
+		            />
+		    </xpath>
+
+        </field>
+    </record>
+
+	
+	<record model="ir.ui.view" id="res_partner_view_button_task">
+	<field name="name">res.partner.view.button.task</field>
+	<field name="model">res.partner</field>
+	<field name="inherit_id" ref="base.view_partner_form" />
+	<field name="priority" eval="10"/>
+	<field name="arch" type="xml">
+	    <xpath expr="//div[@name='buttons']" position="inside">
+	        <button type="action"
+	            string="Tasks"
+	            name="%(project.action_view_task)d"
+	            context="{'search_default_partner_id': partner_id}"
+	            />
+	    </xpath>
+	</field>
+	</record>
+	
+    <record model="ir.ui.view" id="view_partner_id_task_serch">
+        <field name="name">project.task.partner.view.serch</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+            <field name="categ_ids" position="after">
+                <field name="partner_id" />
+            </field>
+    </field>
+    </record>
+
+    </data>
+</openerp>

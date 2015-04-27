@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<record id="custom_invoice_paperformat" model="report.paperformat">
+			<field name="name">Sasmar A4</field>
+			<field name="default" eval="True" />
+			<field name="format">A4</field>
+			<field name="page_height">0</field>
+			<field name="page_width">0</field>
+			<field name="orientation">Portrait</field>
+			<field name="margin_top">67</field>
+			<field name="margin_bottom">30</field>
+			<field name="margin_left">7</field>
+			<field name="margin_right">7</field>
+			<field name="header_line" eval="False"/>
+			<field name="header_spacing">65</field>
+			<field name="dpi">90</field>
+		</record>
+		
+		<report id="custom_invoice_report_id"
+				string="Invoice Sasmar"
+				model="account.invoice"
+				report_type="qweb-pdf"
+				file="sasmar_report.invoice_report_template_id"
+				name="sasmar_report.invoice_report_template_id"/>
+				
+		<record id="custom_invoice_report_id" model="ir.actions.report.xml">
+			<field name="paperformat_id" ref="sasmar_report.custom_invoice_paperformat"/>
+		</record>
+				
+	</data>
+</openerp>

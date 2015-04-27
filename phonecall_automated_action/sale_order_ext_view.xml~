@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_sale_order_ext_form" model="ir.ui.view">
+            <field name="name">sale.order.form.view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="x_repair_type_id" />
+                        <field name="x_device_model_id" />
+                        <field name="x_imei"/>
+                        <field name="x_serial"/>
+                        <field name="x_passcode"/>
+                        <field name="x_accessories"/>
+                        <field name="x_technician_id"/>
+                </xpath>
+                <xpath expr="//field[@name='shop_id']" position="after">
+                        <field name="x_date_time_in"/>
+                        <field name="x_estimated_completion"/>
+                </xpath>
+                <xpath expr="//field[@name='pricelist_id']" position="after">
+                        <field name="x_notes_for_print"  />
+                        <field name="x_internal_notes" />
+                </xpath>
+            </field>
+        </record>
+        <record id="view_account_invoice_ext_form" model="ir.ui.view">
+            <field name="name">account.invoice.form.view</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fiscal_position']" position="after">
+                        <field name="x_repair_type_id"/>
+                        <field name="x_device_model_id"/>
+                        <field name="x_imei"/>
+                        <field name="x_serial"/>
+                        <field name="x_passcode"/>
+                        <field name="x_accessories"/>
+                        <field name="x_technician_id"/>
+                        <field name="shop_id"/>
+                </xpath>
+                <xpath expr="//field[@name='account_id']" position="after">
+                        <field name="x_date_time_in"/>
+                        <field name="x_estimated_completion"/>
+                        <field name="x_notes_for_print"/>
+                        <field name="x_internal_notes"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_repair_type_form">
+            <field name="name">x.repair.type.form</field>
+            <field name="model">x.repair.type</field>
+            <field name="arch" type="xml">
+                <form string="Repair Type" version="7.0">
+                    <group>
+                     <field name="x_Repair_Type"/>
+                  </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_repair_type" model="ir.actions.act_window">
+            <field name="name">Repair Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.repair.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_repair_type" id="menu_action_repair_type" parent="base.menu_base_config" sequence="100" />
+
+        <record model="ir.ui.view" id="view_x_technician_form">
+            <field name="name">x.technician.form</field>
+            <field name="model">x.technician</field>
+            <field name="arch" type="xml">
+                <form string="Technician Name" version="7.0">
+                    <group>
+                     <field name="x_name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_x_technician" model="ir.actions.act_window">
+            <field name="name">Technician Name</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.technician</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_x_technician" id="menu_action_x_technician" parent="base.menu_base_config" sequence="101" />
+
+        <record model="ir.ui.view" id="view_x_device_model_form">
+            <field name="name">x.device.model.form</field>
+            <field name="model">x.device.model</field>
+            <field name="arch" type="xml">
+                <form string="Device Model" version="7.0">
+                    <group>
+                     <field name="x_device_model"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_x_device_model" model="ir.actions.act_window">
+            <field name="name">Device Model</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.device.model</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_x_device_model" id="menu_action_x_device_model" parent="base.menu_base_config" sequence="102" />
+        
+        <record id="view_account_voucher_ext_form1" model="ir.ui.view">
+            <field name="name">account.voucher.day.form.view</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_rate_currency_id']" position="after">
+                        <field name="day" invisible="True"/>
+                </xpath>
+            </field>
+        </record>        
+        
+        <record id="view_account_voucher_ext_search1" model="ir.ui.view">
+            <field name="name">account.voucher.day.search.view</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@string='Period']" position="after">
+                        <filter string="Day" domain="[]" context="{'group_by':'day'}"/>
+                </xpath>
+            </field>
+        </record>   
+    </data>
+</openerp>

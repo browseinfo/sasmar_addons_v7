@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+		<record id="view_product_product_asset_form1" model="ir.ui.view">
+			<field name="name">product.product.asset.raw.extened</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view"/>
+			<field name="arch" type="xml">
+				<div name="options" position="inside">
+		                <field name="raw_material"/>
+		                <label for="raw_material"/>
+						<field name="assets"/>
+						<label for="assets"/>
+						<field name="finish_goods"/>
+						<label for="finish_goods"/>
+		        </div>
+				<xpath expr="//group[@name='general']" position="inside">
+		            <field name="pur_cur_id" />
+		        </xpath>
+			</field>
+		</record>
+
+    </data>
+</openerp>

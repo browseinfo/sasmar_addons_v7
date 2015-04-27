@@ -1,0 +1,15 @@
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
+
+class crm_lead_custome_wizard(osv.osv_memory):
+	_name = "crm.lead.custome.wizard"
+	_columns={
+    }
+
+	def create_customer(self,cr, uid, ids, context=None):
+		crm_obj = self.pool.get('crm.lead')
+		if context.get('active_ids',False):
+			crm_browse_obj = crm_obj.browse(cr, uid, context['active_id'])
+			print "\n\n\nCRM ACTIVE", crm_browse_obj
+			
+

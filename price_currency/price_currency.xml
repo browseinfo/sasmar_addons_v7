@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="product_form_extended" model="ir.ui.view">
+			<field name="name">product.form.extended</field>
+			<field name="model">product.template</field>
+			<field name="inherit_id" ref="product.product_template_form_view"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/sheet/notebook/page/field[@name='description']" position="before">
+					<field name="product_currency_ids" nolable="1"/>
+				</xpath>
+				<field name="list_price" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</field>
+			</field>
+		</record>
+		
+		<record id="currency_extended_tree" model="ir.ui.view">
+			<field name="name">currency.extended.tree</field>
+			<field name="model">currency.extended</field>
+			<field name="arch" type="xml">
+					<tree string="Currenct Extended" editable="bottom">
+						<field name="currency_id"/>
+						<field name="price_type"/>
+						<field name="amount"/>
+					</tree>
+			</field>
+		</record>
+		
+		<record id="product_pricelist_inherit_form_view" model="ir.ui.view">
+			<field name="name">product.pricelist.inherited.form</field>
+			<field name="model">product.pricelist</field>
+			<field name="inherit_id" ref="product.product_pricelist_view"/>
+			<field name="arch" type="xml">
+				<field name="type" position="before">
+					<field name="price_type"/>
+				</field>
+			</field>
+		</record>
+	</data>
+</openerp>

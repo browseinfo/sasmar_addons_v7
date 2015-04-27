@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2014 BrowseInfo (<http://www.browseinfo.in>)
+#
+##############################################################################
+import time
+from osv import osv,fields
+from datetime import datetime
+from openerp.osv import fields,osv
+from openerp.tools.translate import _
+
+class sale_order(osv.Model):
+    _inherit = 'sale.order'
+    _columns = {
+        'x_repair_type_id': fields.many2one('x.repair.type', 'Repair Type'),
+        'x_device_model_id': fields.many2one('x.device.model', 'Device Model'),
+        'x_imei':fields.char('IMEI', size=64),
+        'x_serial':fields.char('Serial', size=64),
+        'x_passcode':fields.char('Passcode', size=64),
+        'x_existing_damage':fields.char('Existing Damage', size=64),
+        'x_accessories':fields.char('Accessories', size=64),
+        'x_technician_id':fields.many2one('x.technician', 'Technician' ),
+	    'x_date_time_in':fields.datetime("Received"),
+	    'x_estimated_completion':fields.datetime("Estimated Completion"),
+        'x_notes_for_print':fields.text("Notes For Print"),
+        'x_internal_notes':fields.text("Internal Notes"),
+    }
+
+    def _prepare_invoice(self, cr, uid, order, lines, context=None):
+        inv_vals = super(sale_order, self)._prepare_invoice(cr, uid, order, lines, context=context)
+        inv_vals.update(
+                        {'x_repair_type_id' : order.x_repair_type_id and order.x_repair_type_id.id or False,
+                        'x_device_model_id' : order.x_device_model_id and order.x_device_model_id.id or False,
+                        'x_imei' : order.x_imei,
+                        'x_serial' : order.x_serial,
+                        'x_passcode' : order.x_passcode,
+                        'x_existing_damage' : order.x_existing_damage,
+                        'x_accessories' : order.x_accessories,
+                        'x_technician_id' : order.x_technician_id and order.x_technician_id.id or False,
+                        'x_date_time_in' : order.x_date_time_in,
+                        'x_estimated_completion' : order.x_estimated_completion,    
+                        'x_notes_for_print' : order.x_notes_for_print,    
+                        'x_internal_notes' : order.x_internal_notes,
+                        'shop_id': order.shop_id and order.shop_id.id or False,                      
+                        })
+        return inv_vals
+sale_order()
+
+class account_invoice(osv.Model):
+    _inherit = 'account.invoice'
+    _columns = {
+        'x_repair_type_id': fields.many2one('x.repair.type', 'Repair Type'),
+        'x_device_model_id': fields.many2one('x.device.model', 'Device Model'),
+        'x_imei':fields.char('IMEI', size=64),
+        'x_serial':fields.char('Serial', size=64),
+        'x_passcode':fields.char('Passcode', size=64),
+        'x_existing_damage':fields.char('Existing Damage', size=64),
+        'x_accessories':fields.char('Accessories', size=64),
+        'x_technician_id':fields.many2one('x.technician', 'Technician'),
+	    'x_date_time_in':fields.datetime("Received"),
+	    'x_estimated_completion':fields.datetime("Estimated Completion"),
+        'x_notes_for_print':fields.text("Notes For Print"),
+        'x_internal_notes':fields.text("Internal Notes"),
+        'shop_id': fields.many2one('sale.shop', 'Shop', required=True, states={'draft': [('readonly', False)]}),
+
+    }
+account_invoice()
+
+class account_voucher(osv.Model):
+    _inherit = 'account.voucher'
+    
+    def _get_day(self, cr, uid, ids, field, arg, context=None):
+        res = {}
+        for voucher in self.browse(cr, uid, ids, context=context):
+            res[voucher.id] = datetime.strptime(voucher.date, '%Y-%m-%d').strftime('%A')
+        return res
+    
+    _columns = {
+      'day' : fields.function(_get_day, type='char', string='Day', store=True),
+    }
+    
+account_voucher()
+    
+    
+
+class x_technician(osv.Model):
+    _name="x.technician"
+    _rec_name="x_name"
+    _columns = {
+        'x_name':fields.char('Name', size=64, required=True),
+
+    }
+x_technician()
+
+class x_repair_type(osv.Model):
+    _name="x.repair.type"
+    _rec_name="x_Repair_Type"
+    _columns = {
+        'x_Repair_Type':fields.char('Repair Type', size=64, required=True),
+    }
+x_repair_type()
+
+class x_device_model(osv.Model):
+    _name="x.device.model"
+    _rec_name="x_device_model"
+    _columns = {
+        'x_device_model':fields.char('Device Model', size=64, required=True),
+
+    }
+x_device_model()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

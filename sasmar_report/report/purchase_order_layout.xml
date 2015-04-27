@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<template id="custom_purchase_order_external_layout">
+			<!-- Multicompany -->
+			<t t-if="o and 'company_id' in o">
+				<t t-set="company" t-value="o.company_id"></t>
+			</t>
+			<t t-if="not o or not 'company_id' in o">
+				<t t-set="company" t-value="res_company"></t>
+			</t>
+			<t t-foreach="docs" t-as="docs">
+				<t t-call="sasmar_report.custom_purchase_order_external_layout_header" />
+				<t t-raw="0" />
+				<t t-call="sasmar_report.custom_purchase_order_external_layout_footer" />
+			</t>
+		</template>
+
+		<template id="custom_purchase_order_external_layout_header">
+			<div class="header">
+				<t t-foreach="docs" t-as="o">
+					<div class="row" style="border-bottom: 2px solid black;">
+						<div class="col-xs-5">
+							<img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo"
+												style="width:200px;height:80px; margin-bottom: 20px" /> <br/>
+							<strong style="font-size: 20;" t-if="o.state in ['draft', 'sent', 'bid', 'confirmed']">Request For Quotation</strong>
+							<strong style="font-size: 20;" t-if="o.state not in ['draft', 'sent', 'bid', 'confirmed']">Purchase Order</strong> <br/>
+							<span style="margin-left: 10px;" t-field="company.partner_id"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.street"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.city"/> ,
+							<span style="margin-left: 10px;" t-field="company.zip"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.country_id"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.vat"/> <br/>
+							<strong style="margin-left: 10px;">Tel: </strong><span t-field="company.phone"/>
+							<strong>Fax: </strong><span t-field="company.fax"/>
+						</div>
+						<div class="col-xs-7" style="font-size:15;">
+							<div class="row">
+								<table style="width:100%;" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff;">
+										<td style="width:35%">
+											<span style="height: 20px">Date</span>
+										</td>
+										<td style="border-left:2px solid white; width:25%">
+											<span style="height: 20px">PO #</span>
+										</td>
+										<td style="border-left:2px solid white; width:40%">
+											<span style="height: 20px">Your Contact</span>
+										</td>
+									</tr>
+									<tr style="height: 20px">
+										<td>
+											<span style="height: 20px" t-esc="get_date(o)"></span>
+										</td>
+										<td>
+											<span style="height: 20px" t-field="o.name"></span>
+										</td>
+										<td>
+											<span style="height: 20px" t-field="o.user_id"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 40%">
+											<span>Country of Origin</span>
+										</td>
+										<td style="border-left:2px solid white; width: 25%">
+											<span>Ship Method</span>
+										</td>
+										<td style="border-left:2px solid white; width: 35%">
+											<span>Validated By</span>
+										</td>
+									</tr>
+									<tr style="height: 20px">
+										<td>
+											<span t-field="o.partner_id.country_id"></span>
+										</td>
+										<td>
+											<span t-field="o.ship_via"></span>
+										</td>
+										<td>
+											<span t-field="o.validator"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 35%">
+											<span>Estimated Supply Date</span>
+										</td>
+										<td style="border-left:2px solid white; width: 35%">
+											<span>Terms</span>
+										</td>
+										<td style="border-left:2px solid white; width: 30%">
+											<span>Your Quotation #</span>
+										</td>
+									</tr>
+									<tr style="height: 30px">
+										<td>
+											<span t-esc="get_est_date(o)"></span>
+										</td>
+										<td>
+											<span t-field="o.payment_term_id"></span>
+										</td>
+										<td>
+											<span t-field="o.qoute_no"></span>
+										</td>
+									</tr>
+								</table>
+								<table style="width:100%; margin-top: -20px" class="table table-condensed">
+									<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+										<td style="width: 60%">
+											<span>Incoterm</span>
+										</td>
+										<td style="border-left:2px solid white; width: 40%">
+											<span>Supplier Tax #</span>
+										</td>
+									</tr>
+									<tr style="height: 30px">
+										<td>
+											<span t-field="o.incoterm_id"></span>
+										</td>
+										<td>
+											<span t-field="o.partner_id.vat"></span>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</t>
+			</div>
+		</template>
+
+		<template id="custom_purchase_order_external_layout_footer">
+			<div class="footer">
+				<div class="row">
+					<t t-foreach="docs" t-as="o">
+						<span>
+							By acceptance of this purchase order you agree to supply in accordance with the general condition of purchase. Any question regarding this purchase order should be directed to the officer noted or by emailing finance@sasmar.com
+						</span>
+						<div style="margin-top: 15px; font-size: 12">
+							<p>Phone: <span t-field="company.phone"/> | Fax: <span t-field="company.fax"/> | Email: <span t-field="company.email"/> | Website: <span t-field="company.website"/> | TIN: <span t-field="company.vat"/></p> 
+						</div>
+					</t>	
+				</div>
+			</div>
+		</template>
+	</data>
+</openerp>

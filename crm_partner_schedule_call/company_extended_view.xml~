@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+    <record id="view_res_branch_form" model="ir.ui.view">
+            <field name="name">res.branch.form</field>
+            <field name="model">res.branch</field>
+            <field name="arch" type="xml">
+            	<form string="Branch Information" version="7.0">
+            		<sheet>
+            			<group cols="4">
+            				<group>
+            					<field name="name"/>
+            					<field name="address"/>
+            					<field name="company_id"/>
+        					</group>
+        					<group>
+        					</group>
+            			</group>
+        			</sheet>
+    			</form>
+			</field>
+	</record>
+	
+
+	<record id="view_res_branch__tree" model="ir.ui.view">
+		<field name="name">res.branch.tree</field>
+		<field name="model">res.branch</field>
+		<field name="arch" type="xml">
+			<tree string="Branch Information">
+				<field name="name"/>
+				<field name="company_id"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="action_res_branch_form" model="ir.actions.act_window">
+		<field name="name">Branch</field>
+		<field name="res_model">res.branch</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem action="action_res_branch_form"
+            id="menu_action_res_branch"
+            parent="base.menu_config_address_book"
+            sequence="17"/>
+            
+            
+    <record id="view_res_company_form1" model="ir.ui.view">
+		<field name="name">res.comapny.extened</field>
+		<field name="model">res.company</field>
+		<field name="inherit_id" ref="base.view_company_form"/>
+		<field name="arch" type="xml">
+			<field name="company_registry" position="after">
+				<field name="licence_no"/>
+			</field>
+		</field>
+    </record>
+
+    </data>
+</openerp>

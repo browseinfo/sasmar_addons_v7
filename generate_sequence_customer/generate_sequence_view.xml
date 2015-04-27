@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<record id="partner_form_extended_view" model="ir.ui.view">
+			<field name="name">res.partner.extend.form</field>
+			<field name="model">res.partner</field>
+			<field name="inherit_id" ref="base.view_partner_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='email']" position="after">
+					<field name="sequence"/>
+				</xpath>
+				<xpath expr="//field[@name='is_company']" position="replace">
+					<field name="is_company" on_change="onchange_is_company(is_company, type, parent_id)"/>
+				</xpath>
+			</field>
+		</record>
+			
+	</data>
+</openerp>

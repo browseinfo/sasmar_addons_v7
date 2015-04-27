@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<record id="purchase_order_extend_form" model="ir.ui.view">
+			<field name="name">purchase.order.extend.form</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//button[@string='Send RFQ by Email']" position="replace">
+					<button name="wkf_send_rfq" states="approved,sent" string="Send RFQ by Email" type="object" context="{'send_rfq':True}" class="oe_highlight"/>
+				</xpath>
+				<xpath expr="//field[@name='partner_ref']" position="after">
+					<field name="user_id"/>
+					<field name="qoute_no" invisible="1"/>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page/group/group/field[@name='shipped']" position="after">
+					<field name="ship_via"/>
+				</xpath>
+			</field>
+		</record>
+        
+        <record id="view_stock_production_lot" model="ir.ui.view">
+			<field name="name">stock.production.lot.extended</field>
+			<field name="model">stock.production.lot</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="stock.view_production_lot_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='name']" position="replace">
+				   	<field name="name" string="Lot Number"/> 
+				</xpath>
+			</field>		
+		</record>
+        
+        <record id="stock.action_production_lot_form" model="ir.actions.act_window">
+            <field name="name">Lot Number</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="stock.view_production_lot_tree"/>
+            <field name="search_view_id" ref="stock.search_product_lot_filter"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a serial number.
+              </p><p>
+                This is the list of all the production lots you recorded. When
+                you select a lot, you can get the upstream or downstream
+                traceability of the products contained in lot. By default, the
+                list is filtred on the serial numbers that are available in
+                your warehouse but you can uncheck the 'Available' button to
+                get all the lots you produced, received or delivered to
+                customers.
+              </p>
+            </field>
+    	</record>
+    	<menuitem action="stock.action_production_lot_form" id="stock.menu_action_production_lot_form" 
+            parent="stock.menu_traceability" groups="stock.group_production_lot" name ="Lot Number" 
+            sequence="1"/>
+	</data>
+</openerp>

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+    
+        <!-- demo automated actions -->
+
+        <record id="filter_draft_phonecall" model="ir.filters">
+            <field name="name">Confirmed PhoneCall</field>
+            <field name="model_id">crm.phonecall</field>
+            <field name="domain">[('state','=','open')]</field>
+            <field name="user_id" eval="False"/>
+        </record>
+
+        <record id="action_email_reminder_phonecall" model="ir.actions.server">
+            <field name="name">Reminder to Salesman</field>
+            <field name="model_id" ref="crm.model_crm_phonecall"/>
+            <field name="condition">True</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">email</field>
+            <field name="email">object.user_id.email</field>
+            <field name="subject">Reminder on Scheduled Calls: [[object.id ]] [[object.name or '']]</field>
+            <field name="message">Your Scheduled Calls is arrange on below information.
+Name: [[object.name ]]
+ID: [[object.id ]]
+Description: [[object.description]]
+partner_phone: [[ object.partner_phone]]
+Date : [[ object.date]]
+Responsible Sales Person : [[ object.user_id.name]]
+
+            </field>
+        </record>
+        <record id="rule_set_reminder_lead" model="base.action.rule">
+            <field name="name">Set Auto Reminder on Phonecall.</field>
+            <field name="model_id" ref="crm.model_crm_phonecall"/>
+            <field name="sequence">1</field>
+            <field name="trg_date_id" ref="crm.field_crm_phonecall_date"/>
+            <field name="trg_date_range">-5</field>
+            <field name="filter_id" ref="filter_draft_phonecall"/>
+            <field name="trg_date_range_type">minutes</field>
+            <field name="server_action_ids" eval="[(6,0,[ref('action_email_reminder_phonecall')])]"/>
+        </record>
+
+    </data>
+</openerp>
+

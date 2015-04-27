@@ -1,0 +1,273 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <!-- EDI related Email Templates menu -->
+        <record model="ir.actions.act_window" id="action_email_for_sasmar_templates">
+            <field name="name">Email Templates</field>
+            <field name="res_model">email.template</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="email_template.email_template_tree" />
+            <field name="search_view_id" ref="email_template.view_email_template_search"/>
+            <field name="context">{'search_default_model_id':'account.invoice'}</field>
+            <field name="context" eval="{'search_default_model_id': ref('account.model_account_invoice')}"/>
+        </record>
+        <!--menuitem id="menu_email_templates" parent="menu_configuration_misc" action="action_email_for_sasmar_templates" sequence="30" groups="base.group_no_one"/-->
+
+    </data>
+
+    <!-- Mail template are declared in a NOUPDATE block
+         so users can freely customize/delete them -->
+    <data >
+        <!--Email template -->
+        <record id="email_template_sasmar_invoice" model="email.template">
+            <field name="name">Sale Order Created</field>
+            <field name="email_from">${(object.user_id.email or object.company_id.email or 'noreply@localhost')|safe}</field>
+            <field name="email_to">${'finance@sasmar.com'}</field>
+            <field name="subject">${object.company_id.name} SaleOrder (Ref ${object.name or 'n/a'})</field>
+            <field name="email_recipients">${object.partner_id.id}</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+    <p>Hello Finance Department,</p>
+
+    <p>A new Sale Order is created: </p>
+
+    <p style="border-left: 1px solid #8e0000; margin-left: 30px;">
+       &nbsp;&nbsp;<strong>REFERENCES</strong><br />
+       &nbsp;&nbsp;Quote number: <strong>${object.name}</strong><br />
+       &nbsp;&nbsp;Quote total: <strong>${object.amount_total} ${object.currency_id.name}</strong><br />
+       &nbsp;&nbsp;Quote date: ${object.date_order}<br />
+       % if object.origin:
+       &nbsp;&nbsp;Order reference: ${object.client_order_ref}<br />
+       % endif
+       % if object.user_id:
+       &nbsp;&nbsp;Your contact: <a href="mailto:${object.user_id.email or ''}?subject=Invoice%20${object.number}">${object.user_id.name}</a>
+       % endif
+    </p>
+
+    % if object.paypal_url:
+    <br/>
+    <p>It is also possible to directly pay with Paypal:</p>
+        <a style="margin-left: 120px;" href="${object.paypal_url}">
+            <img class="oe_edi_paypal_button" src="https://www.paypal.com/en_US/i/btn/btn_paynowCC_LG.gif"/>
+        </a>
+    % endif
+
+    <br/>
+    <p>If you have any question, do not hesitate to contact us.</p>
+    <p>Thank you for choosing ${object.company_id.name or 'us'}!</p>
+    <br/>
+    <br/>
+    <div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+            <strong style="text-transform:uppercase;">${object.company_id.name}</strong></h3>
+    </div>
+    <div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+        <span style="color: #222; margin-bottom: 5px; display: block; ">
+        % if object.company_id.street:
+            ${object.company_id.street}<br/>
+        % endif
+        % if object.company_id.street2:
+            ${object.company_id.street2}<br/>
+        % endif
+        % if object.company_id.city or object.company_id.zip:
+            ${object.company_id.zip} ${object.company_id.city}<br/>
+        % endif
+        % if object.company_id.country_id:
+            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>
+        % endif
+        </span>
+        % if object.company_id.phone:
+            <div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+                Phone:&nbsp; ${object.company_id.phone}
+            </div>
+        % endif
+        % if object.company_id.website:
+            <div>
+                Web :&nbsp;<a href="${object.company_id.website}">${object.company_id.website}</a>
+            </div>
+        %endif
+        <p></p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+
+
+
+<!-- OVER RIDE THE REPORT TEMPLATE -->
+        <record id="purchase.email_template_edi_purchase_done" model="email.template">
+            <field name="name">Purchase Order Sasmar-SASMAR SPRL</field>
+            <field name="email_from">${(object.validator.email or '')|safe}</field>
+            <field name="subject">${object.company_id.name} Order (Ref ${object.name or 'n/a' })</field>
+            <field name="email_recipients">${object.partner_id.id}</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="report_template" ref="sasmar_report.custom_purchase_order_report_id"/>
+            <field name="report_name">RFQ_${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+    <p>Hello ${object.partner_id.name},</p>
+    
+    <p>Here is a ${object.state in ('draft', 'sent') and 'request for quotation' or 'purchase order confirmation'} from ${object.company_id.name}: </p>
+    
+    <p style="border-left: 1px solid #8e0000; margin-left: 30px;">
+       &nbsp;&nbsp;<strong>REFERENCES</strong><br />
+       &nbsp;&nbsp;Order number: <strong>${object.name}</strong><br />
+       &nbsp;&nbsp;Order total: <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong><br />
+       &nbsp;&nbsp;Order date: ${object.date_order}<br />
+       % if object.origin:
+       &nbsp;&nbsp;Order reference: ${object.origin}<br />
+       % endif
+       % if object.partner_ref:
+       &nbsp;&nbsp;Your reference: ${object.partner_ref}<br />
+       % endif
+       % if object.validator:
+       &nbsp;&nbsp;Your contact: <a href="mailto:${object.validator.email or ''}?subject=Order%20${object.name}">${object.validator.name}</a>
+       % endif
+    </p>
+
+    <br/>
+    <p>If you have any question, do not hesitate to contact us.</p>
+    <p>Thank you!</p>
+    <br/>
+    <br/>
+    <div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+            <strong style="text-transform:uppercase;">${object.company_id.name}</strong></h3>
+    </div>
+    <div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+        <span style="color: #222; margin-bottom: 5px; display: block; ">
+        % if object.company_id.street:
+            ${object.company_id.street}<br/>
+        % endif
+        % if object.company_id.street2:
+            ${object.company_id.street2}<br/>
+        % endif
+        % if object.company_id.city or object.company_id.zip:
+            ${object.company_id.zip} ${object.company_id.city}<br/>
+        % endif
+        % if object.company_id.country_id:
+            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>
+        % endif
+        </span>
+        % if object.company_id.phone:
+            <div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+                Phone:&nbsp; ${object.company_id.phone}
+            </div>
+        % endif
+        % if object.company_id.website:
+            <div>
+                Web :&nbsp;<a href="${object.company_id.website}">${object.company_id.website}</a>
+            </div>
+        %endif
+        <p></p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+       <record id="email_template_edi_purchase_second" model="email.template">
+            <field name="name">Purchase Order Sasmar-SASMAR LIMITED</field>
+            <field name="email_from">${(object.validator.email or '')|safe}</field>
+            <field name="subject">${object.company_id.name} Order (Ref ${object.name or 'n/a' })</field>
+            <field name="email_recipients">${object.partner_id.id}</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="report_template" ref="sasmar_report.custom_purchase_order_report_id"/>
+            <field name="report_name">RFQ_${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+    <p>Hello ${object.partner_id.name},</p>
+    
+    <p>Here is a ${object.state in ('draft', 'sent') and 'request for quotation' or 'purchase order confirmation'} from ${object.company_id.name}: </p>
+    
+    <p style="border-left: 1px solid #8e0000; margin-left: 30px;">
+       &nbsp;&nbsp;<strong>REFERENCES</strong><br />
+       &nbsp;&nbsp;Order number: <strong>${object.name}</strong><br />
+       &nbsp;&nbsp;Order total: <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong><br />
+       &nbsp;&nbsp;Order date: ${object.date_order}<br />
+       % if object.origin:
+       &nbsp;&nbsp;Order reference: ${object.origin}<br />
+       % endif
+       % if object.partner_ref:
+       &nbsp;&nbsp;Your reference: ${object.partner_ref}<br />
+       % endif
+       % if object.validator:
+       &nbsp;&nbsp;Your contact: <a href="mailto:${object.validator.email or ''}?subject=Order%20${object.name}">${object.validator.name}</a>
+       % endif
+    </p>
+
+    <br/>
+    <p>If you have any question, do not hesitate to contact us.</p>
+    <p>Thank you!</p>
+    <br/>
+    <br/>
+    <div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+            <strong style="text-transform:uppercase;">${object.company_id.name}</strong></h3>
+    </div>
+    <div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+        <span style="color: #222; margin-bottom: 5px; display: block; ">
+        % if object.company_id.street:
+            ${object.company_id.street}<br/>
+        % endif
+        % if object.company_id.street2:
+            ${object.company_id.street2}<br/>
+        % endif
+        % if object.company_id.city or object.company_id.zip:
+            ${object.company_id.zip} ${object.company_id.city}<br/>
+        % endif
+        % if object.company_id.country_id:
+            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>
+        % endif
+        </span>
+        % if object.company_id.phone:
+            <div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+                Phone:&nbsp; ${object.company_id.phone}
+            </div>
+        % endif
+        % if object.company_id.website:
+            <div>
+                Web :&nbsp;<a href="${object.company_id.website}">${object.company_id.website}</a>
+            </div>
+        %endif
+        <p></p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+
+    <!--   <record id="account.act_proforma2" model="workflow.activity">
+            <field name="wkf_id" ref="account.wkf"/>
+            <field name="name">proforma2</field>
+            <field name="action">set_to_proforma()</field>
+            <field name="kind">function</field>
+        </record>
+        <record id="account.draft_to_pro2" model="workflow.transition">
+            <field name="act_from" ref="account.act_draft"/>
+            <field name="act_to" ref="account.act_proforma2"/>
+            <field name="signal">invoice_proforma2</field>
+        </record>
+
+        <record id="account.pro2_to_open" model="workflow.transition">
+            <field name="act_from" ref="account.act_proforma2"/>
+            <field name="act_to" ref="account.act_open"/>
+            <field name="signal">invoice_open</field>
+        </record>
+
+        <record id="account.pro2_to_cancel" model="workflow.transition">
+            <field name="act_from" ref="account.act_proforma2"/>
+            <field name="act_to" ref="account.act_cancel"/>
+            <field name="signal">invoice_cancel</field>
+        </record>  -->
+    </data>
+</openerp>
+

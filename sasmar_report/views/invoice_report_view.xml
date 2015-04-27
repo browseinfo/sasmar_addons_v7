@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<template id="invoice_report_template_id">
+			<t t-call="sasmar_report.custom_invoice_external_layout">
+				<div class="page">
+					<t t-foreach="docs" t-as="o">
+						<div class="row"> 
+							<div class="row" style="margin-top: 10px">
+								<div class="col-xs-5">
+									<table style="width: 100%">
+										<t t-foreach="get_delivery_add(o)" t-as="sale_obj">
+										<tr>
+											<td style="background-color: #4B71A9; color: #ffffff; width: 100%; height: 30px; padding: 5px;">
+												<span class="pull-right">Delivery Address</span>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="sale_obj.partner_shipping_id.name"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="sale_obj.partner_shipping_id.street"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="sale_obj.partner_shipping_id.street2"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<div style="width: 100%">
+													<span style="width: 40%" t-field="sale_obj.partner_shipping_id.city"/>,
+													<span style="width: 20%" t-field="sale_obj.partner_shipping_id.state_id.code"/>,
+													<span style="width: 40%" t-field="sale_obj.partner_shipping_id.zip"/>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="sale_obj.partner_shipping_id.country_id"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>Contact Name: </strong>
+												<span t-field="sale_obj.partner_shipping_id.name"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>Tel: </strong>
+												<span t-field="sale_obj.partner_shipping_id.phone"/>
+											</td>
+										</tr>
+										</t>
+									</table>
+								</div>
+								<div class="col-xs-2">
+								</div>
+								<div class="col-xs-5">
+									<table style="width: 100%">
+										<tr>
+											<td style="background-color: #4B71A9; color: #ffffff; width: 100%; height: 30px; padding: 5px;">
+												<span class="pull-right">Invoice Address</span>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="o.partner_id.name"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="o.partner_id.street"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="o.partner_id.street2"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<div style="width: 100%">
+													<span style="width: 40%" t-field="o.partner_id.city"/>,
+													<span style="width: 20%" t-field="o.partner_id.state_id.code"/>,
+													<span style="width: 40%" t-field="o.partner_id.zip"/>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 100%">
+												<span t-field="o.partner_id.country_id"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>Contact Name: </strong>
+												<span t-field="o.partner_id.name"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>Tel: </strong>
+												<span t-field="o.partner_id.phone"/>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+							<div style="height: 700px">
+								<table class="table table-condensed" style="width: 100%; margin-top: 10px">
+									<thead>
+										<tr style="background-color: #4B71A9; color: #ffffff;">
+											<th style="width:10%">
+												<span style="height: 20px">QTY.</span>
+											</th>
+											<th style="border-left:2px solid white; width:10%">
+												<span style="height: 20px">ITEM #</span>
+											</th>
+											<th style="border-left:2px solid white; width:30%">
+												<span style="height: 20px">PRODUCT</span>
+											</th>
+											<th style="border-left:2px solid white; width:15%">
+												<span style="height: 20px">PRICE</span>
+											</th>
+											<th style="border-left:2px solid white; width:10%">
+												<span style="height: 20px">TAX</span>
+											</th>
+											<th style="border-left:2px solid white; width:10%">
+												<span style="height: 20px">DISC%</span>
+											</th>
+											<th style="border-left:2px solid white; width:15%">
+												<span style="height: 20px" class="pull-right">TOTAL</span>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr style="border-bottom: 2px solid black" t-foreach="o.invoice_line" t-as="line">
+											<td>
+												<span t-field="line.quantity"/>
+											</td>
+											<td>
+												<span t-field="line.product_id"/>
+											</td>
+											<td>
+												<span t-field="line.name"/>
+											</td>
+											<td>
+												<span t-field="line.price_unit"/>
+											</td>
+											<td>
+												<span t-esc="', '.join(map(lambda x: x.name, line.invoice_line_tax_id))"/>
+											</td>
+											<td>
+												<span t-field="line.discount"/>
+											</td>
+											<td style="margin-right: 50px">
+												<span class="pull-right" t-field="line.price_subtotal"/>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<div class="col-xs-8">
+									<strong>Total Units: <span t-esc="get_quantity(o)"/></strong>
+								</div>
+								<div class="col-xs-4">
+									<table style="width: 100%;">
+										<tr>
+											<td class="col-xs-1">
+												<strong class="pull-left">Nett: </strong>
+											</td>
+											<td class="col-xs-3">
+												<span class="pull-left" t-field="o.company_id.currency_id.name"/>
+												<span class="pull-left" t-field="o.company_id.currency_id.symbol"/>
+												<span class="pull-right" style="margin-right: -25px" t-field="o.amount_untaxed"/>
+											</td>
+										</tr>
+										<tr>
+											<td class="col-xs-1">
+												<strong class="pull-left">Tax: </strong>
+											</td>
+											<td class="col-xs-3">
+												<span class="pull-left" t-field="o.company_id.currency_id.name"/>
+												<span class="pull-left" t-field="o.company_id.currency_id.symbol"/>
+												<span class="pull-right" style="margin-right: -25px" t-field="o.amount_tax"/>
+											</td>
+										</tr>
+										<tr>
+											<td class="col-xs-1">
+												<strong class="pull-left">Total: </strong>
+											</td>
+											<td class="col-xs-3">
+												<span class="pull-left" t-field="o.company_id.currency_id.name"/>
+												<span class="pull-left" t-field="o.company_id.currency_id.symbol"/>
+												<span class="pull-right" style="margin-right: -25px" t-field="o.amount_total"/>
+											</td>
+										</tr>
+									</table>
+								</div>
+								<div style="margin-top: 200px">
+									<span style="margin-bottom: 10px">Fiscal Position Note:</span> <br/>
+									<span t-field="o.comment"/>
+								</div>
+							</div>
+						</div>
+					</t>
+				</div>
+			</t>
+		</template>
+	</data>
+</openerp>

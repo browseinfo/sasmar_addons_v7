@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <record id="view_crm_lead_wizard1" model="ir.ui.view">
+            <field name="name">>crm.lead.wizard.view.form</field>
+            <field name="model">crm.lead.custome.wizard</field>
+            <field name="arch" type="xml">
+            <form string="Customer Lead Wizard" version="7.0">
+                <group col='4'>
+						 <separator string="Create Customer"/>
+                    </group>
+                    <footer>
+                        <button name="create_customer" string="Customer" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+            </form>
+           </field>
+        </record>
+       
+        <act_window id="action_crm_lead_wizard_form"
+            key2="client_action_multi" 
+            name="Create Customer"
+            res_model="crm.lead.custome.wizard"
+            src_model="crm.lead" 
+            view_mode="form" 
+            target="new" 
+            multi="True"
+            view_type="form" />
+
+    </data>
+</openerp>

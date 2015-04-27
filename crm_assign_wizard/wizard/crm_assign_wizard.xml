@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="view_crm_assign2salesperson" model="ir.ui.view">
+            <field name="name">crm.assign2salesperson.form</field>
+            <field name="model">crm.assign2salesperson</field>
+            <field name="arch" type="xml">
+                <form string="Assign to Salesperson" version="7.0">
+                    <group>
+                        <field name="salesperson" class="oe_inline"/>
+                    </group>
+                    <footer>
+                        <button name="assign2salesman" string="Assign" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <act_window id="action_crm_assign2salesperson"
+            multi="True"
+            key2="client_action_multi" name="Assign to Salesperson"
+            res_model="crm.assign2salesperson" src_model="crm.lead"
+            view_mode="form" target="new" view_type="form"
+            view_id="view_crm_assign2salesperson"/>
+
+    </data>
+</openerp>

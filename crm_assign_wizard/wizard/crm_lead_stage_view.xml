@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <!-- Merge Opportunities  -->
+        <record model="ir.ui.view" id="multi_lead_stage_form">
+            <field name="name">crm.multi.lead.stage.form</field>
+            <field name="model">crm.lead.stage</field>
+            <field name="arch" type="xml">
+                <form string="Leads" version="7.0">
+                    <group>
+                    <field name="stage_id" string="Stage"/>
+                     </group>
+                    <separator string="Select Leads"/>
+                    <field name="lead_ids" domain="[('type','=', 'lead')]" >
+                        <tree>
+                            <field name="create_date"/>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="contact_name"/>
+                            <field name="email_from"/>
+                            <field name="phone"/>
+                            <field name="stage_id"/>
+                            <field name="user_id"/>
+                            <field name="section_id"/>
+                        </tree>
+                    </field>
+                    <footer>
+                        <button name="action_multi_lead_stage" type="object" string="Update" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                  
+                </form>
+            </field>
+        </record>
+
+
+        <act_window id="action_multi_lead_stage"
+            multi="True"
+            key2="client_action_multi" name="Move leads to stage"
+            res_model="crm.lead.stage" src_model="crm.lead"
+            view_mode="form" target="new" view_type="form"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<template id="custom_sale_external_layout">
+			<!-- Multicompany -->
+			<t t-if="o and 'company_id' in o">
+				<t t-set="company" t-value="o.company_id"></t>
+			</t>
+			<t t-if="not o or not 'company_id' in o">
+				<t t-set="company" t-value="res_company"></t>
+			</t>
+			<t t-foreach="docs" t-as="docs">
+				<t t-call="sasmar_report.custom_sale_external_layout_header" />
+				<t t-raw="0" />
+				<t t-call="sasmar_report.custom_sale_external_layout_footer" />
+			</t>
+		</template>
+
+		<template id="custom_sale_external_layout_header">
+			<div class="header">
+				<t t-foreach="docs" t-as="o">
+					<div class="row" style="border-bottom: 2px solid black">
+						<div class="col-xs-5">
+							<img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 65px;"/>
+						<h3>
+                			<strong><span t-if="o.state not in ['draft','sent']">Sale Order</span></strong>
+                			<strong><span t-if="o.state in ['draft','sent']">Quotation</span></strong>
+            			</h3>
+            			<span style="margin-left: 10px;" t-field="company.partner_id"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.street"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.street2"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.city"/> ,
+							<span style="margin-left: 10px;" t-field="company.zip"/> <br/>
+							<span style="margin-left: 10px;" t-field="company.country_id"/> <br/>
+							<span style="margin-left: 10px;" t-field="o.company_id.vat"/> <br/>
+							<strong style="margin-left: 10px;">Tel: </strong><span t-field="company.phone"/>
+							<strong>Fax: </strong><span t-field="company.fax"/>
+            			
+					</div>
+						<div class="col-xs-7" style="font-size:15;">
+							<table class="col-xs-12">
+								<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;" class="text-center">
+									<td class="col-xs-3">
+										<span class="pull-left">Date</span>
+									</td>
+									<td class="col-xs-3" style="border-left:2px solid white">
+										<span class="pull-left">Order #</span>
+									</td>
+									<td class="col-xs-6" style="border-left:2px solid white">
+										<span class="pull-left">Customer Ref</span>
+									</td>
+								</tr>
+								<tr style="height: 30px">
+									<td>
+										<span t-esc="_get_date(o)"/>
+									</td>
+									<td>
+										<span t-field="o.name"></span>
+									</td>
+									<td>
+										<span t-field="o.client_order_ref"></span>
+									</td>
+								</tr>
+							</table>
+							<table class="col-xs-12">
+								<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+									<td class="col-xs-5">
+										<span class="pull-left">Customer Supplier #</span>
+									</td>
+									<td class="col-xs-3" style="border-left:2px solid white">
+										<span class="pull-left">Ship Method</span>
+									</td>
+									<td class="col-xs-4" style="border-left:2px solid white">
+										<span class="pull-left">Account Manager</span>
+									</td>
+								</tr>
+								<tr style="height: 30px">
+									<td>
+										<span t-field="o.supplier_number"></span>
+									</td>
+									<td>
+										<span t-field="o.ship_via.name"></span>
+									</td>
+									<td>
+										<span t-field="o.user_id.name"></span>
+									</td>
+								</tr>
+							</table>
+							<table class="col-xs-12">
+								<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+									<td class="col-xs-4">
+										<span class="pull-left">Estimated delivery</span>
+									</td>
+									<td class="col-xs-4" style="border-left:2px solid white">
+										<span class="pull-left">Terms</span>
+									</td>
+									<td class="col-xs-4" style="border-left:2px solid white">
+										<span class="pull-left">Customer PO #</span>
+									</td>
+								</tr>
+								<tr style="height: 30px">
+									<td>
+										<span t-esc="get_est_date(o)"></span>
+									</td>
+									<td>
+										<span t-field="o.payment_term.name"></span>
+									</td>
+									<td>
+										<span t-field="o.po_number"></span>
+									</td>
+								</tr>
+							</table>
+							<table class="col-xs-12">
+								<tr style="background-color: #4B71A9; color: #ffffff; height: 30px;">
+									<td class="col-xs-8">
+										<span class="pull-left">Incoterm</span>
+									</td>
+									<td class="col-xs-4" style="border-left:2px solid white">
+										<span class="pull-left">Customer Tax #</span>
+									</td>
+								</tr>
+								<tr style="height: 30px">
+									<td>
+										<span t-field="o.incoterm"></span>
+									</td>
+									<td>
+										<span t-field="o.partner_id.vat"></span>
+									</td>
+								</tr>
+							</table>
+							</div>
+					</div>
+				</t>
+			</div>
+		</template>
+
+		<template id="custom_sale_external_layout_footer">
+			<div class="footer">
+						<t t-foreach="docs" t-as="o">
+						<div style="width: 100%;">
+							<strong style="font-size: 20">Direct Payment Details</strong>
+							<table style="width: 100%">
+								<tr>
+									<td style="width: 15%">
+										<span>Bank: </span>
+									</td>
+									<td>
+										<span t-field="o.company_id.bank_ids and o.company_id.bank_ids[0].bank_name"/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span>Company: </span>
+									</td>
+									<td>
+										<span t-field="o.company_id.name"/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span>Bank Identifier: </span>
+									</td>
+									<td>
+										<span t-field="o.company_id.bank_ids and o.company_id.bank_ids[0].bank_bic"/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span>Account #: </span>
+									</td>
+									<td>
+										<span t-field="o.company_id.bank_ids and o.company_id.bank_ids[0].acc_number"/>
+									</td>
+									<tr>
+										<td class="text-left" style="font-size:9;"></td>
+									</tr>
+								</tr>
+							</table>
+						</div>
+						<div class="text-left" style="font-size:9;">
+								<p>Phone: <span t-field="company.phone"/> | Fax: <span t-field="company.fax"/> | Email: <span t-field="company.email"/> | Website: <span t-field="company.website"/> | TIN: <span t-field="company.vat"/></p>
+						</div>
+					</t>
+			</div>
+		</template>
+	</data>
+</openerp>

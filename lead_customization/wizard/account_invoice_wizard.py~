@@ -1,0 +1,32 @@
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
+
+
+class crm_lead(osv.osv_memory):
+	_inherit = "crm.lead"
+	_columns={
+        'start_date': fields.datetime('Start Date', required=True),
+        'end_date': fields.datetime('End Date',required=True),
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

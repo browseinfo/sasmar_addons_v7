@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_product_form_extended" model="ir.ui.view">
+            <field name="name">product.form.extended</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="after">
+                    <field name="expiry_date" />
+                    <field name="batch_date" />
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_list_extended" model="ir.ui.view">
+            <field name="name">product.list.extended</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_id']" position="after">
+                    <field name="expiry_date" />
+                    <field name="batch_date" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
+
+

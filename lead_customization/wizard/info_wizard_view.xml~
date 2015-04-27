@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+<!--       <record id="view_info_fill_import" model="ir.ui.view">
+            <field name="name">Fill_info</field>
+            <field name="model">info.fill</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Fill Info.." version="7.0">
+                    <sheet string="Contact info ">  
+                         <div class="oe_title">
+                                <label for="part_name" class="oe_edit_only"  string="name"/>  
+                                <h1><field name="part_name"/></h1>
+                         </div>
+                         <group col="4">
+                           <field name="part_street" class="oe_inline"/>
+                            <field name="part_city" class="oe_inline"/>
+                         </group>
+
+                    <div class="oe_chatter">
+                    </div> 
+                    <footer>
+                        <button name="create_record" string="Create" type="object" class="oe_highlight"/>
+                         or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                         
+                    </sheet>    			
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_info_fill_import" model="ir.actions.act_window">
+            <field name="name">Info Fill</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">info.fill</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+	            name="Import Info"
+            action="action_view_info_fill_import"
+            id="menu_view_info_fill_import"
+            parent="information.product_info_root"/-->
+    </data>
+</openerp>

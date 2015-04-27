@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<record id="supplier_account_invoice_extend_form" model="ir.ui.view">
+			<field name="name">account.supplier.invoice.extend.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_supplier_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='account_id']" position="after">
+					<field name="ship_via"/>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page/group/group/field[@name='move_id']" position="after">
+					<field name="delivery_date"/>
+					<field name="po_number" invisible="1"/>
+					<field name="supplier_number"/>
+				</xpath>
+			</field>
+		</record>
+		
+		
+		<record id="customer_invoice_form_extended" model="ir.ui.view">
+			<field name="name">account.customer.invoice.extend.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='account_id']" position="after">
+					<field name="ship_via"/>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page/group/group/field[@name='move_id']" position="after">
+					<field name="delivery_date"/>
+					<field name="po_number"/>
+					<field name="supplier_number"/>
+					<field name="incoterm"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>
