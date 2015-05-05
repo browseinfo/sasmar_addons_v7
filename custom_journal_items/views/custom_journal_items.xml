@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<template id="assets_backend" inherit_id="web.assets_backend" name="Shopbbbbb">
+		  <xpath expr="." position="inside">
+
+<script type="text/javascript" src="/custom_journal_items/static/src/js/account_move_line_quickadd.js"></script>
+		  </xpath>
+		</template>
+	</data>
+</openerp>
